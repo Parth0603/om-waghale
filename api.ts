@@ -162,7 +162,7 @@ export const api = {
     analyze: async (patientData: any) => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-pro',
         contents: `Analyze these symptoms for a rural patient: ${JSON.stringify(patientData)}`,
         config: {
           systemInstruction: SYSTEM_INSTRUCTION_ANALYSIS,

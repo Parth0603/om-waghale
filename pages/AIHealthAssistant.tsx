@@ -57,6 +57,53 @@ const AIHealthAssistant: React.FC<{ auth: UserAuth }> = ({ auth }) => {
   const [matchedDoctors, setMatchedDoctors] = useState<Doctor[]>([]);
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
+  // Common symptoms for quick input
+  const commonSymptoms = [
+    "Fever and headache",
+    "Cough and cold", 
+    "Stomach pain",
+    "Body ache and fatigue",
+    "Chest pain",
+    "Difficulty breathing",
+    "Nausea and vomiting",
+    "Diarrhea",
+    "Skin rash",
+    "Joint pain",
+    "Back pain",
+    "Dizziness"
+  ];
+
+  // Common durations
+  const commonDurations = [
+    "Less than 24 hours",
+    "1-2 days", 
+    "3-7 days",
+    "1-2 weeks",
+    "More than 2 weeks"
+  ];
+
+  // Common existing conditions
+  const commonConditions = [
+    "Diabetes",
+    "High Blood Pressure", 
+    "Heart Disease",
+    "Asthma",
+    "Arthritis",
+    "Kidney Disease",
+    "Liver Disease",
+    "Thyroid Issues",
+    "Pregnant",
+    "Allergies"
+  ];
+
+  const handleQuickSymptom = (symptom: string) => {
+    setSymptoms(prev => prev ? `${prev}, ${symptom}` : symptom);
+  };
+
+  const handleQuickDuration = (dur: string) => {
+    setDuration(dur);
+  };
+
   useEffect(() => {
     loadPatient();
   }, []);
@@ -154,7 +201,8 @@ const AIHealthAssistant: React.FC<{ auth: UserAuth }> = ({ auth }) => {
       setMatchedDoctors(docs.slice(0, 3));
       
     } catch (err) {
-      alert("AI Diagnostics is overloaded. Please seek standard consultation.");
+      console.error("AI Diagnosis Error:", err);
+      alert(`AI Error: ${err instanceof Error ? err.message : 'Unknown error occurred'}`);
     } finally {
       setIsAnalyzing(false);
     }
@@ -380,8 +428,148 @@ const AIHealthAssistant: React.FC<{ auth: UserAuth }> = ({ auth }) => {
 
         {!aiResult ? (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-500">
-            <div className="bg-indigo-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden"><div className="absolute top-0 right-0 p-10 opacity-10 rotate-12"><Heart size={140} /></div><div className="relative z-10 space-y-4"><h2 className="text-3xl font-black tracking-tight">Hi {auth.name.split(' ')[0]}! 👋</h2><p className="text-indigo-100 font-medium text-lg leading-relaxed max-w-xl">How are you feeling? Describe your symptoms below.</p></div></div>
-            <div className="bg-white rounded-[3rem] border border-slate-100 shadow-xl overflow-hidden divide-y divide-slate-50"><div className="p-10 space-y-6"><h3 className="text-lg font-black uppercase tracking-tight flex items-center gap-3"><Activity className="text-indigo-600" /> Symptoms</h3><textarea className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none focus:border-indigo-500 font-bold text-lg text-slate-900 placeholder:text-slate-400 transition-all min-h-[160px] resize-none" placeholder="e.g. Fever for 2 days, body ache..." value={symptoms} onChange={e => setSymptoms(e.target.value)} /></div><div className="p-10 bg-slate-50/50"><button onClick={runAnalysis} disabled={!symptoms.trim() || isAnalyzing} className="w-full bg-indigo-600 text-white py-6 rounded-[2rem] font-black text-xl uppercase tracking-widest flex items-center justify-center gap-4 hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-2xl shadow-indigo-100 active:scale-95">{isAnalyzing ? <Loader2 className="animate-spin" size={32} /> : <Zap size={32} />}{isAnalyzing ? "Analyzing..." : "Get AI Advice"}</button></div></div>
+            <div className="bg-indigo-900 text-white p-10 rounded-[3rem] shadow-2xl relative overflow-hidden"><div className="absolute top-0 right-0 p-10 opacity-10 rotate-12"><Heart size={140} /></div><div className="relative z-10 space-y-4"><h2 className="text-3xl font-black tracking-tight">Hi {auth.name.split(' ')[0]}! 👋</h2><p className="text-indigo-100 font-medium text-lg leading-relaxed max-w-xl">How are you feeling? Describe your symptoms below or use quick options.</p></div></div>
+            
+            {/* Symptom Input Section */}
+            <div className="bg-white rounded-[3rem] border border-slate-100 shadow-xl overflow-hidden divide-y divide-slate-50">
+              <div className="p-10 space-y-6">
+                <h3 className="text-lg font-black uppercase tracking-tight flex items-center gap-3"><Activity className="text-indigo-600" /> Symptoms</h3>
+                <textarea 
+                  className="w-full p-8 bg-slate-50 border-4 border-slate-100 rounded-[2rem] outline-none focus:border-indigo-500 font-bold text-lg text-slate-900 placeholder:text-slate-400 transition-all min-h-[120px] resize-none" 
+                  placeholder="e.g. Fever for 2 days, body ache..." 
+                  value={symptoms} 
+                  onChange={e => setSymptoms(e.target.value)} 
+                />
+                
+                {/* Quick Symptom Buttons */}
+                <div className="space-y-4">
+                  <p className="text-sm font-black text-slate-500 uppercase tracking-widest">Quick Symptoms</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {commonSymptoms.map((symptom, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleQuickSymptom(symptom)}
+                        className="p-3 bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 rounded-xl text-xs font-bold text-slate-600 hover:text-indigo-600 transition-all text-left"
+                      >
+                        {symptom}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Duration & Severity Section */}
+              <div className="p-10 space-y-8 bg-slate-50/30">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><Clock size={16} /> Duration</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {commonDurations.map((dur, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleQuickDuration(dur)}
+                          className={`p-3 rounded-xl text-xs font-bold transition-all text-left ${
+                            duration === dur 
+                              ? 'bg-indigo-600 text-white' 
+                              : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                          }`}
+                        >
+                          {dur}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><Thermometer size={16} /> Severity</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {(['mild', 'moderate', 'severe'] as const).map((sev) => (
+                        <button
+                          key={sev}
+                          onClick={() => setSeverity(sev)}
+                          className={`p-3 rounded-xl text-xs font-bold transition-all text-left capitalize ${
+                            severity === sev 
+                              ? 'bg-indigo-600 text-white' 
+                              : 'bg-white border border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-600'
+                          }`}
+                        >
+                          {sev}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Existing Conditions Section */}
+              <div className="p-10 space-y-6 bg-slate-50/50">
+                <h4 className="text-sm font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><Heart size={16} /> Existing Conditions</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {commonConditions.map((condition, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleConditionToggle(condition)}
+                      className={`p-3 rounded-xl text-xs font-bold transition-all text-center ${
+                        conditions.includes(condition)
+                          ? 'bg-emerald-600 text-white' 
+                          : 'bg-white border border-slate-200 text-slate-600 hover:border-emerald-300 hover:text-emerald-600'
+                      }`}
+                    >
+                      {condition}
+                    </button>
+                  ))}
+                </div>
+                {conditions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-200">
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Selected:</span>
+                    {conditions.map((c, i) => (
+                      <span key={i} className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-bold">
+                        {c}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Current Medications */}
+              <div className="p-10 space-y-4">
+                <h4 className="text-sm font-black text-slate-600 uppercase tracking-widest flex items-center gap-2"><Pill size={16} /> Current Medications</h4>
+                <input
+                  type="text"
+                  className="w-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl outline-none focus:border-indigo-500 font-medium text-slate-900 placeholder:text-slate-400 transition-all"
+                  placeholder="e.g. Paracetamol, Blood pressure medicine..."
+                  value={medications}
+                  onChange={e => setMedications(e.target.value)}
+                />
+              </div>
+
+              {/* Analyze Button */}
+              <div className="p-10 bg-slate-50/50">
+                <div className="flex gap-4 mb-4">
+                  <button 
+                    onClick={runAnalysis} 
+                    disabled={!symptoms.trim() || isAnalyzing} 
+                    className="flex-1 bg-indigo-600 text-white py-6 rounded-[2rem] font-black text-xl uppercase tracking-widest flex items-center justify-center gap-4 hover:bg-indigo-700 disabled:opacity-50 transition-all shadow-2xl shadow-indigo-100 active:scale-95"
+                  >
+                    {isAnalyzing ? <Loader2 className="animate-spin" size={32} /> : <Zap size={32} />}
+                    {isAnalyzing ? "Analyzing..." : "Get AI Advice"}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSymptoms("fever and headache");
+                      setDuration("1-2 days");
+                      setSeverity("moderate");
+                    }}
+                    className="px-6 py-6 bg-emerald-600 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all"
+                  >
+                    Test Sample
+                  </button>
+                </div>
+                <p className="text-center text-xs text-slate-400 mt-4 font-bold">
+                  Using Gemini Pro AI • Model: gemini-pro • Status: {isAnalyzing ? 'Processing...' : 'Ready'}
+                </p>
+              </div>
+            </div>
           </div>
         ) : (
           <div id="aiResults" className="space-y-10">

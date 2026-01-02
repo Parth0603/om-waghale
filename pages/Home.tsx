@@ -1,16 +1,25 @@
 
 import React from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { ShieldCheck, UserIcon, StethoscopeIcon, ArrowRight, LayoutDashboardIcon, Activity, Globe, Lock } from 'lucide-react';
+import { ShieldCheck, UserIcon, StethoscopeIcon, ArrowRight, LayoutDashboardIcon, Activity, Globe, Lock, Bot } from 'lucide-react';
 import { UserAuth, UserRole } from '../types';
 
-const Home: React.FC<{ auth: UserAuth | null }> = ({ auth }) => {
+const Home: React.FC<{ auth: UserAuth | null; onLogin: (auth: UserAuth) => void }> = ({ auth, onLogin }) => {
   if (auth) {
     const target = auth.role === UserRole.AGENT ? '/dashboard' : 
                    auth.role === UserRole.PATIENT ? '/patient/portal' : 
-                   auth.role === UserRole.ADMIN ? '/admin/portal' : '/doctor/portal';
+                   auth.role === UserRole.ADMIN ? '/admin/portal' : 
+                   auth.role === UserRole.GUEST ? '/patient/ai-assistant' : '/doctor/portal';
     return <Navigate to={target} replace />;
   }
+
+  const handleGuestAccess = () => {
+    onLogin({
+      id: 'guest-' + Date.now(),
+      role: UserRole.GUEST,
+      name: 'Guest User'
+    });
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -52,6 +61,12 @@ const Home: React.FC<{ auth: UserAuth | null }> = ({ auth }) => {
             <Link to="/login/patient" className="w-full sm:w-auto px-12 py-5 bg-white/10 backdrop-blur-md text-white rounded-2xl font-black text-lg uppercase tracking-widest border border-white/20 hover:bg-white/20 transition-all">
               Patient Portal
             </Link>
+            <button 
+              onClick={handleGuestAccess}
+              className="w-full sm:w-auto px-12 py-5 bg-emerald-500 text-slate-900 rounded-2xl font-black text-lg uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-2xl shadow-emerald-500/20"
+            >
+              Try AI Assistant
+            </button>
           </div>
         </div>
       </section>
@@ -63,7 +78,7 @@ const Home: React.FC<{ auth: UserAuth | null }> = ({ auth }) => {
           <div className="w-20 h-1.5 bg-teal-500 mx-auto rounded-full"></div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-10">
+        <div className="grid md:grid-cols-4 gap-10">
           {/* Patient Card */}
           <div className="bg-slate-50 p-12 rounded-[3rem] border-2 border-transparent hover:border-teal-500 transition-all group relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-5 -rotate-12">
@@ -118,6 +133,26 @@ const Home: React.FC<{ auth: UserAuth | null }> = ({ auth }) => {
             <Link to="/login/agent" className="inline-flex items-center gap-3 text-teal-400 font-black uppercase tracking-widest text-sm hover:gap-5 transition-all">
               Launch Kiosk Station <ArrowRight size={20} />
             </Link>
+          </div>
+
+          {/* Guest AI Assistant Card */}
+          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-12 rounded-[3rem] border-2 border-transparent hover:border-emerald-500 transition-all group relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5 -rotate-12">
+              <Bot size={120} />
+            </div>
+            <div className="w-16 h-16 bg-white text-emerald-600 rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-emerald-100 ring-4 ring-white transition-transform group-hover:scale-110">
+              <Bot size={32} />
+            </div>
+            <h3 className="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tight">AI Health Check</h3>
+            <p className="text-slate-500 mb-10 leading-relaxed font-medium">
+              Get instant AI-powered health screening without registration. Quick symptom analysis and health guidance.
+            </p>
+            <button 
+              onClick={handleGuestAccess}
+              className="inline-flex items-center gap-3 text-emerald-600 font-black uppercase tracking-widest text-sm hover:gap-5 transition-all"
+            >
+              Try AI Assistant <ArrowRight size={20} />
+            </button>
           </div>
         </div>
       </section>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
 import { Mic, MicOff, Volume2, Info, Loader2 } from 'lucide-react';
@@ -65,7 +64,7 @@ const VoiceConsultant: React.FC = () => {
       outputAudioContextRef.current = new AudioContext({ sampleRate: 24000 });
 
       const sessionPromise = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+        model: 'gemini-2.0-flash-exp',
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
