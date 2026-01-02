@@ -566,7 +566,7 @@ const AIHealthAssistant: React.FC<{ auth: UserAuth }> = ({ auth }) => {
                   </button>
                 </div>
                 <p className="text-center text-xs text-slate-400 mt-4 font-bold">
-                  Using Gemini Pro AI • Model: gemini-pro • Status: {isAnalyzing ? 'Processing...' : 'Ready'}
+                  Using Gemini 2.5 Flash AI • Status: {isAnalyzing ? 'Processing...' : 'Ready'} • Real AI Analysis
                 </p>
               </div>
             </div>

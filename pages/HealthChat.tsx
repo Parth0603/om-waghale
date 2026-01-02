@@ -32,7 +32,7 @@ const HealthChat: React.FC = () => {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const chat = ai.chats.create({
-        model: 'gemini-pro',
+        model: 'gemini-2.5-flash',
         config: {
           systemInstruction: 'You are an expert health advisor for a rural health helpdesk. Provide helpful, medically accurate information while always advising to seek professional care. Use simple language.'
         }
