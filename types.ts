@@ -168,12 +168,15 @@ export interface SymptomAnalysis {
 
 export interface Medicine {
   name: string;
+  genericName?: string;
   dosage: string;
+  frequency?: string;
   duration: string;
+  timing?: string;
   purpose: string;
   precautions: string;
-  sideEffects?: string[];
-  contraindications?: string[];
+  sideEffects?: string | string[];
+  contraindications?: string | string[];
   alternatives?: string[];
   type?: 'OTC' | 'Prescription';
 }
@@ -188,11 +191,16 @@ export interface AIDiagnosis {
   prescription: {
     medicines: Medicine[];
     homeRemedies: string[];
+    dietaryAdvice?: string[];
+    lifestyleModifications?: string[];
   };
   precautions: string[];
   whenToSeekDoctor: string[];
+  followUpAdvice?: string[];
   recommendedSpecialization: string;
   urgencyLevel: UrgencyLevel;
+  expectedRecoveryTime?: string;
+  redFlagSymptoms?: string[];
   isEmergency?: boolean;
   proximityScore?: number; // Distance-based scoring
 }

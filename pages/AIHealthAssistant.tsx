@@ -252,47 +252,157 @@ const AIHealthAssistant: React.FC<{ auth: UserAuth }> = ({ auth }) => {
 
       <div className="space-y-6">
         <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center gap-2"><Pill size={14} className="text-blue-500" /> 💊 Prescribed Medications</h3>
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {res.prescription.medicines.map((m, i) => (
-            <div key={i} onClick={() => setSelectedMedicine(m)} className="bg-white p-8 rounded-[2.5rem] border-2 border-slate-50 flex flex-col md:flex-row items-center gap-8 group hover:border-emerald-200 transition-all cursor-pointer">
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center gap-3">
-                  <p className="text-xl font-black text-slate-900 uppercase">{m.name}</p>
-                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[8px] font-black uppercase rounded">OTC</span>
+            <div key={i} onClick={() => setSelectedMedicine(m)} className="bg-white p-8 rounded-[2.5rem] border-2 border-slate-50 hover:border-emerald-200 transition-all cursor-pointer shadow-sm hover:shadow-lg">
+              <div className="space-y-6">
+                {/* Medicine Header */}
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-2xl font-black text-slate-900 uppercase">{m.name}</h4>
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-lg">
+                        {m.type || 'OTC'}
+                      </span>
+                    </div>
+                    {m.genericName && (
+                      <p className="text-sm font-bold text-slate-500 italic">Generic: {m.genericName}</p>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Medicine #{i + 1}</p>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="flex flex-col"><span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Dosage</span><span className="text-xs font-bold text-slate-700">{m.dosage}</span></div>
-                  <div className="flex flex-col"><span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Duration</span><span className="text-xs font-bold text-slate-700">{m.duration}</span></div>
-                  <div className="flex flex-col"><span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Purpose</span><span className="text-xs font-bold text-slate-700">{m.purpose}</span></div>
+
+                {/* Dosage Information */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <p className="text-[8px] font-black text-blue-600 uppercase tracking-widest mb-1">Dosage</p>
+                    <p className="text-sm font-bold text-blue-900">{m.dosage}</p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
+                    <p className="text-[8px] font-black text-purple-600 uppercase tracking-widest mb-1">Frequency</p>
+                    <p className="text-sm font-bold text-purple-900">{m.frequency || 'As needed'}</p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                    <p className="text-[8px] font-black text-green-600 uppercase tracking-widest mb-1">Duration</p>
+                    <p className="text-sm font-bold text-green-900">{m.duration}</p>
+                  </div>
+                  <div className="bg-orange-50 p-4 rounded-xl border border-orange-100">
+                    <p className="text-[8px] font-black text-orange-600 uppercase tracking-widest mb-1">Timing</p>
+                    <p className="text-sm font-bold text-orange-900">{m.timing || 'Any time'}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="bg-amber-50 p-5 rounded-2xl border border-amber-100 max-w-xs w-full">
-                <p className="text-[8px] font-black text-amber-600 uppercase mb-1">Warning</p>
-                <p className="text-[10px] font-bold text-amber-800 leading-relaxed">{m.precautions}</p>
+
+                {/* Purpose */}
+                <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+                  <p className="text-[8px] font-black text-indigo-600 uppercase tracking-widest mb-2">Medical Purpose</p>
+                  <p className="text-sm font-bold text-indigo-900 leading-relaxed">{m.purpose}</p>
+                </div>
+
+                {/* Warnings & Side Effects */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+                    <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-2 flex items-center gap-1">
+                      <AlertTriangle size={10} /> Precautions
+                    </p>
+                    <p className="text-xs font-bold text-amber-800 leading-relaxed">{m.precautions}</p>
+                  </div>
+                  {m.sideEffects && (
+                    <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                      <p className="text-[8px] font-black text-rose-600 uppercase tracking-widest mb-2">Side Effects</p>
+                      <p className="text-xs font-bold text-rose-800 leading-relaxed">
+                        {Array.isArray(m.sideEffects) ? m.sideEffects.join(', ') : m.sideEffects}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Contraindications */}
+                {m.contraindications && (
+                  <div className="bg-red-50 p-6 rounded-2xl border border-red-200">
+                    <p className="text-[8px] font-black text-red-600 uppercase tracking-widest mb-2 flex items-center gap-1">
+                      <X size={10} /> Do Not Take If
+                    </p>
+                    <p className="text-xs font-bold text-red-800 leading-relaxed">
+                      {Array.isArray(m.contraindications) ? m.contraindications.join(', ') : m.contraindications}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
+      {/* Enhanced Home Care & Lifestyle Section */}
+      <div className="grid md:grid-cols-3 gap-8">
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center gap-2"><Heart size={14} className="text-rose-500" /> 💡 Home Care</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center gap-2"><Heart size={14} className="text-rose-500" /> 💡 Home Remedies</h3>
           <div className="bg-indigo-50 border border-indigo-100 p-8 rounded-[2.5rem] space-y-4">
             {res.prescription.homeRemedies.map((h, i) => (
-              <div key={i} className="flex gap-4 items-start"><div className="w-1.5 h-1.5 bg-indigo-400 rounded-full mt-2 shrink-0" /><p className="text-sm font-bold text-indigo-900 leading-relaxed">{h}</p></div>
+              <div key={i} className="flex gap-4 items-start">
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full mt-2 shrink-0" />
+                <p className="text-sm font-bold text-indigo-900 leading-relaxed">{h}</p>
+              </div>
             ))}
           </div>
         </div>
+
+        {res.prescription.dietaryAdvice && (
+          <div className="space-y-4">
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center gap-2"><Thermometer size={14} className="text-green-500" /> 🥗 Diet Plan</h3>
+            <div className="bg-green-50 border border-green-100 p-8 rounded-[2.5rem] space-y-4">
+              {res.prescription.dietaryAdvice.map((d, i) => (
+                <div key={i} className="flex gap-4 items-start">
+                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full mt-2 shrink-0" />
+                  <p className="text-sm font-bold text-green-900 leading-relaxed">{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center gap-2"><AlertTriangle size={14} className="text-amber-500" /> ⚠️ Urgent Indicators</h3>
+          <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2 flex items-center gap-2"><AlertTriangle size={14} className="text-amber-500" /> ⚠️ Red Flag Signs</h3>
           <div className="bg-rose-50 border border-rose-100 p-8 rounded-[2.5rem] space-y-4">
-            {res.whenToSeekDoctor.map((w, i) => (
-              <div key={i} className="flex gap-4 items-start"><div className="w-1.5 h-1.5 bg-rose-400 rounded-full mt-2 shrink-0" /><p className="text-sm font-bold text-rose-900 leading-relaxed">{w}</p></div>
+            {(res.redFlagSymptoms || res.whenToSeekDoctor).map((w, i) => (
+              <div key={i} className="flex gap-4 items-start">
+                <div className="w-1.5 h-1.5 bg-rose-400 rounded-full mt-2 shrink-0" />
+                <p className="text-sm font-bold text-rose-900 leading-relaxed">{w}</p>
+              </div>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Recovery Timeline & Follow-up */}
+      {(res.expectedRecoveryTime || res.followUpAdvice) && (
+        <div className="grid md:grid-cols-2 gap-8">
+          {res.expectedRecoveryTime && (
+            <div className="bg-teal-50 border border-teal-100 p-8 rounded-[2.5rem]">
+              <h3 className="text-[10px] font-black text-teal-600 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                <Clock size={14} /> Expected Recovery
+              </h3>
+              <p className="text-lg font-black text-teal-900">{res.expectedRecoveryTime}</p>
+            </div>
+          )}
+          
+          {res.followUpAdvice && (
+            <div className="bg-blue-50 border border-blue-100 p-8 rounded-[2.5rem] space-y-4">
+              <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-2">
+                <Calendar size={14} /> Follow-up Care
+              </h3>
+              {res.followUpAdvice.map((f, i) => (
+                <div key={i} className="flex gap-4 items-start">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mt-2 shrink-0" />
+                  <p className="text-sm font-bold text-blue-900 leading-relaxed">{f}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -394,18 +504,111 @@ const AIHealthAssistant: React.FC<{ auth: UserAuth }> = ({ auth }) => {
     <div className="min-h-screen bg-slate-50 font-inter">
       {selectedMedicine && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-200">
-           <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-              <div className="p-8 border-b bg-blue-600 text-white flex items-center justify-between">
+           <div className="bg-white w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+              <div className="p-8 border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-between">
                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-white/20 rounded-2xl"><Pill size={24} /></div>
-                    <div><h3 className="text-xl font-black uppercase tracking-tight">{selectedMedicine.name}</h3><p className="text-[10px] font-bold uppercase tracking-widest opacity-80">Drug Details</p></div>
+                    <div className="p-3 bg-white/20 rounded-2xl"><Pill size={28} /></div>
+                    <div>
+                      <h3 className="text-2xl font-black uppercase tracking-tight">{selectedMedicine.name}</h3>
+                      {selectedMedicine.genericName && (
+                        <p className="text-sm font-bold opacity-80">Generic: {selectedMedicine.genericName}</p>
+                      )}
+                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">Complete Drug Information</p>
+                    </div>
                  </div>
-                 <button onClick={() => setSelectedMedicine(null)} className="p-2 hover:bg-white/20 rounded-xl transition-colors"><X size={24} /></button>
+                 <button onClick={() => setSelectedMedicine(null)} className="p-3 hover:bg-white/20 rounded-xl transition-colors"><X size={24} /></button>
               </div>
-              <div className="p-10 space-y-8 max-h-[70vh] overflow-y-auto">
-                 <div className="space-y-2"><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Clinical Purpose</p><p className="font-bold text-slate-700 leading-relaxed italic">"{selectedMedicine.purpose}"</p></div>
-                 <div className="space-y-4"><p className="text-[9px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-1"><AlertTriangle size={10} /> Contraindications</p><div className="flex flex-wrap gap-2">{['Allergy', 'Liver issues', 'Pregnancy'].map(c => (<span key={c} className="px-3 py-1 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-black uppercase border border-rose-100">{c}</span>))}</div></div>
-                 <button onClick={() => setSelectedMedicine(null)} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs">Dismiss</button>
+              
+              <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
+                {/* Dosage Information */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <p className="text-[9px] font-black text-blue-600 uppercase tracking-widest mb-2">Dosage & Frequency</p>
+                    <p className="font-bold text-blue-900 text-lg">{selectedMedicine.dosage}</p>
+                    {selectedMedicine.frequency && (
+                      <p className="text-sm font-bold text-blue-700 mt-1">{selectedMedicine.frequency}</p>
+                    )}
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-2xl border border-green-100">
+                    <p className="text-[9px] font-black text-green-600 uppercase tracking-widest mb-2">Duration & Timing</p>
+                    <p className="font-bold text-green-900 text-lg">{selectedMedicine.duration}</p>
+                    {selectedMedicine.timing && (
+                      <p className="text-sm font-bold text-green-700 mt-1">{selectedMedicine.timing}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Clinical Purpose */}
+                <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+                  <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest mb-3 flex items-center gap-1">
+                    <Info size={10} /> Medical Purpose
+                  </p>
+                  <p className="font-bold text-indigo-900 leading-relaxed text-lg">"{selectedMedicine.purpose}"</p>
+                </div>
+
+                {/* Precautions */}
+                <div className="bg-amber-50 p-6 rounded-2xl border border-amber-100">
+                  <p className="text-[9px] font-black text-amber-600 uppercase tracking-widest mb-3 flex items-center gap-1">
+                    <AlertTriangle size={10} /> Important Precautions
+                  </p>
+                  <p className="font-bold text-amber-800 leading-relaxed">{selectedMedicine.precautions}</p>
+                </div>
+
+                {/* Side Effects */}
+                {selectedMedicine.sideEffects && (
+                  <div className="bg-orange-50 p-6 rounded-2xl border border-orange-100">
+                    <p className="text-[9px] font-black text-orange-600 uppercase tracking-widest mb-3">Possible Side Effects</p>
+                    <p className="font-bold text-orange-800 leading-relaxed">
+                      {Array.isArray(selectedMedicine.sideEffects) 
+                        ? selectedMedicine.sideEffects.join(', ') 
+                        : selectedMedicine.sideEffects}
+                    </p>
+                  </div>
+                )}
+
+                {/* Contraindications */}
+                {selectedMedicine.contraindications && (
+                  <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                    <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest mb-3 flex items-center gap-1">
+                      <X size={10} /> Do Not Take If You Have
+                    </p>
+                    <div className="space-y-2">
+                      <p className="font-bold text-rose-800 leading-relaxed">
+                        {Array.isArray(selectedMedicine.contraindications) 
+                          ? selectedMedicine.contraindications.join(', ') 
+                          : selectedMedicine.contraindications}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Medicine Type */}
+                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                  <span className="text-sm font-bold text-slate-600">Medicine Classification:</span>
+                  <span className="px-4 py-2 bg-slate-200 text-slate-800 rounded-lg font-black text-sm uppercase">
+                    {selectedMedicine.type || 'Over-The-Counter (OTC)'}
+                  </span>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4 pt-4">
+                  <button 
+                    onClick={() => setSelectedMedicine(null)} 
+                    className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-slate-200 transition-all"
+                  >
+                    Close
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const medicineInfo = `${selectedMedicine.name} - ${selectedMedicine.dosage} - ${selectedMedicine.purpose}`;
+                      navigator.clipboard.writeText(medicineInfo);
+                      alert('Medicine information copied to clipboard!');
+                    }}
+                    className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-blue-700 transition-all"
+                  >
+                    Copy Info
+                  </button>
+                </div>
               </div>
            </div>
         </div>

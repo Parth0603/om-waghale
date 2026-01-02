@@ -10,12 +10,16 @@ The AI Health Assistant is now using the **real Gemini API** with a working API 
 - **Fallback**: Smart fallback system in case of API errors
 
 ## Features Now Working with Real AI:
-✅ **Intelligent Symptom Analysis**: Real AI-powered diagnosis  
-✅ **Personalized Prescriptions**: Context-aware medicine recommendations  
-✅ **Dynamic Confidence Scoring**: AI calculates confidence levels  
-✅ **Smart Emergency Detection**: AI identifies urgent cases  
-✅ **Contextual Home Remedies**: Tailored natural treatments  
-✅ **Professional Referrals**: AI determines when to see specialists  
+✅ **Comprehensive Medicine Database**: 50+ specific medicines with detailed information  
+✅ **Detailed Prescriptions**: Dosage, frequency, duration, timing, purpose for each medicine  
+✅ **Safety Information**: Precautions, side effects, contraindications for all medicines  
+✅ **Personalized Consultations**: Age, gender, and condition-specific recommendations  
+✅ **Indian Pharmacy Integration**: Medicines available in Indian pharmacies with brand names  
+✅ **Multi-category Treatment**: Fever, respiratory, GI, cardiovascular, diabetes medicines  
+✅ **Dietary & Lifestyle Advice**: Comprehensive care beyond just medicines  
+✅ **Recovery Timeline**: Expected recovery time and follow-up care instructions  
+✅ **Emergency Detection**: Red flag symptoms and when to seek immediate help  
+✅ **Professional UI**: Enhanced medicine cards with detailed information display  
 
 ## Model Information:
 - **Primary Model**: `gemini-2.5-flash` (Fast, reliable, good quota)
@@ -30,9 +34,9 @@ Try these inputs to see real AI responses:
 - "Severe chest pain and difficulty breathing" (emergency detection)
 
 ## API Usage:
-- **Health Assistant**: Uses `gemini-1.5-pro` for detailed medical analysis
-- **Health Chat**: Uses `gemini-1.5-pro` for conversational health advice
-- **Symptom Analysis**: Uses `gemini-1.5-pro` for quick assessments
+- **Health Assistant**: Uses `gemini-2.5-flash` for detailed medical analysis
+- **Health Chat**: Uses `gemini-2.5-flash` for conversational health advice
+- **Symptom Analysis**: Uses `gemini-2.5-flash` for quick assessments
 
 ## Fallback System:
 If the API fails, the system automatically provides:
